@@ -1,4 +1,4 @@
-angular.module('noticiasApp.services')
+angular.module('imagenesApp.services')
     .service('ImagenesService', ['Upload', function (Upload) {
         var subir = function subir(data, exito, error) {
             return Upload.upload({

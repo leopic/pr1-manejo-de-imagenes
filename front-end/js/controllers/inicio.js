@@ -1,4 +1,4 @@
-angular.module('noticiasApp.controllers')
+angular.module('imagenesApp.controllers')
     .controller('InicioController', ['$scope', 'ImagenesService',
         function ($scope, ImagenesService) {
             $scope.init = function init() {

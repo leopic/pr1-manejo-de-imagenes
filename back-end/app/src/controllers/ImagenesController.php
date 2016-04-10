@@ -6,10 +6,8 @@
 
 namespace App\Controllers;
 
-use App\Services\LoggingService;
 use App\Services\ImagenesService;
 use Slim\Http\Request;
-use Psr\Http\Message\UploadedFileInterface;
 
 class ImagenesController {
 
@@ -38,10 +36,10 @@ class ImagenesController {
             $totalDeArchivos = count($listaDeArchivos);
             $archivosExitosos = 0;
 
-            /** @var UploadedFileInterface $archivo */
+            // PHP maneja los archivos subidos como un array, por lo que tenemos que iterar sobre él
             foreach ($listaDeArchivos as $archivo) {
-                $tituloImagenServidor = $datosDelFormulario["tituloImagenServidor"];
-                $resultadoArchivo = $this->imagenesService->guardarImagenEnServidor($archivo, $tituloImagenServidor);
+                $titulo = $datosDelFormulario["tituloImagenServidor"];
+                $resultadoArchivo = $this->imagenesService->guardarImagenEnServidor($archivo, $titulo);
                 $exito = array_key_exists("meta", $resultadoArchivo) && $resultadoArchivo["meta"]["url"];
 
                 if ($exito) {
@@ -77,13 +75,12 @@ class ImagenesController {
             $totalDeArchivos = count($listaDeArchivos);
             $archivosExitosos = 0;
 
-            /** @var UploadedFileInterface $archivo */
             foreach ($listaDeArchivos as $archivo) {
                 $titulo = $datosDelFormulario["tituloImagenBD"];
                 $resultadoArchivo = $this->imagenesService->guardarImagenEnBD($archivo, $titulo);
                 $exito = array_key_exists("meta", $resultadoArchivo) && $resultadoArchivo["meta"]["id"];
 
-                LoggingService::logVariable($resultadoArchivo);
+//                LoggingService::logVariable($resultadoArchivo);
 
                 if ($exito) {
                     $resultado["ids"][] = $resultadoArchivo["meta"]["id"];
@@ -128,13 +125,12 @@ class ImagenesController {
             $totalDeArchivos = count($listaDeArchivos);
             $archivosExitosos = 0;
 
-            /** @var UploadedFileInterface $archivo */
             foreach ($listaDeArchivos as $archivo) {
                 $titulo = $datosDelFormulario["tituloImagenServicio"];
                 $resultadoArchivo = $this->imagenesService->servicio($archivo, $titulo);
                 $exito = array_key_exists("meta", $resultadoArchivo) && $resultadoArchivo["meta"]["id"];
 
-                LoggingService::logVariable($resultadoArchivo, __FILE__, __LINE__);
+//                LoggingService::logVariable($resultadoArchivo, __FILE__, __LINE__);
 
                 if ($exito) {
                     $resultado["ids"][] = $resultadoArchivo["meta"]["id"];

@@ -40,10 +40,11 @@ class PersistenciaService {
      *
      * @param string $query
      * @param array $params
-     * @param bool $useStrongParams
+     * @param bool $usarParametrosConTipo
+     * 
      * @return array
      */
-    public function query($query, $params=[], $useStrongParams = false) {
+    public function query($query, $params=[], $usarParametrosConTipo = false) {
         $cuentaDeRegistrosAfectados = null;
 
         /**
@@ -84,7 +85,7 @@ class PersistenciaService {
                  * Cuando debemos pasar el `tipo` de parámetro hacia PDO,
                  * recorremos todos los parámetros, sacamos su nombre, tipo y valor.
                  */
-                if ($useStrongParams) {
+                if ($usarParametrosConTipo) {
                     foreach ($params as $parametro => &$valores) {
                         $nombre = $parametro;
                         // La operación `bindParam` ocupa una variable por referencia, por eso el `&` en la variable.

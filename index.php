@@ -27,7 +27,7 @@ $scripts = [
 <body>
 
 <div class="col-md-8 col-md-offset-2">
-    <div ng-app="noticiasApp" ng-view></div>
+    <div ng-app="imagenesApp" ng-view></div>
 </div>
 
 <?php

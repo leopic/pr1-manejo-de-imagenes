@@ -36,8 +36,9 @@ $app->post(
 
 /**
  * Debido a que las imágenes no viven el el sistema de archivos, debemos proveer alguna forma al front-end de
- * consumirlas, en este caso cuando entre una petición a http://localhost/back-end/imagenes/bd/1, iremos a la BD a
- * solicitar la imagen y la respuesta que le daremos al usuario será PHP creando la imagen basado en el registro.
+ * consumirlas. En este caso cuando entre una petición a http://localhost/back-end/imagenes/bd/1, iremos a la BD a
+ * solicitar la imagen con el ID 1. La respuesta que le daremos al usuario será PHP creando la imagen basado en el
+ * registro o en caso de no encontrar el registro, un error 404.
  */
 $app->get(
     "/imagenes/bd/{id}",
@@ -51,9 +52,9 @@ $app->get(
          * junto con la imagen en si.
          */
         if (array_key_exists("data", $resultado)) {
-            // Preparamos la respuesta
+            // Debemos responder con el tipo de archivo correcto
             $nuevaRespuesta = $response->withAddedHeader("Content-type", $resultado["data"]["tipo"]);
-            // Escribimos en ella la imagen
+            // Escribimos en la respuesta el contenido binario del archivo
             return $nuevaRespuesta->write($resultado["data"]["imagen"]);
         } else {
             // Si no encontramos la imagen en la BD
@@ -63,6 +64,7 @@ $app->get(
     }
 );
 
+// Sube imágenes a un servicio externo
 $app->post(
     "/imagenes/servicio",
     function ($request, $response) {

@@ -1,11 +1,11 @@
 /**
  * Definición del módulo.
  */
-angular.module('noticiasApp', [
+angular.module('imagenesApp', [
         'ngRoute',
         'ngFileUpload',
-        'noticiasApp.controllers',
-        'noticiasApp.services'
+        'imagenesApp.controllers',
+        'imagenesApp.services'
     ])
     /**
      * Configuración del enrutamiento.
@@ -14,7 +14,7 @@ angular.module('noticiasApp', [
         $routeProvider
             .when('/', {
                 controller: 'InicioController',
-                templateUrl: 'front-end/partials/indice.html'
+                templateUrl: 'front-end/partials/inicio.html'
             })
             .otherwise({
                 redirectTo: '/'
@@ -22,5 +22,5 @@ angular.module('noticiasApp', [
     });
 
 // Definimos todos los sub-módulos para evitar conflictos.
-angular.module('noticiasApp.controllers', []);
-angular.module('noticiasApp.services', []);
+angular.module('imagenesApp.controllers', []);
+angular.module('imagenesApp.services', []);

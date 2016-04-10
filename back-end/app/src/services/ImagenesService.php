@@ -11,16 +11,20 @@ use PDO;
 
 class ImagenesService {
 
-    private $storage;
-    private $validation;
+    private $persistencia;
+    private $validacionesService;
+    /**
+     * Carpeta dentro de "back-end" en donde guardaremos las imágenes.
+     * Debe tener los permisos correctos de escritura para que PHP pueda subir imágenes.
+     */
     private $rutaParaArchivos = "user-uploads";
 
     /**
      * ImagenesService constructor.
      */
     public function __construct() {
-        $this->storage = new PersistenciaService();
-        $this->validation = new ValidacionesService();
+        $this->persistencia = new PersistenciaService();
+        $this->validacionesService = new ValidacionesService();
     }
 
     /**
@@ -28,6 +32,7 @@ class ImagenesService {
      * Encargado de tomar un archivo y retornar la ruta en donde fue subido.
      *
      * @param UploadedFileInterface $archivo
+     *
      * @return array
      */
     private function subir($archivo) {
@@ -83,7 +88,7 @@ class ImagenesService {
      *
      * @return string
      */
-    private function getRutaAplicacion() {
+    private function getRutaArchivosSubidos() {
         return "back-end/$this->rutaParaArchivos";
     }
 
@@ -94,12 +99,12 @@ class ImagenesService {
      * @return string
      */
     private function getRutaArchivo($nombreArchivo) {
-        $aplicacion = $this->getRutaAplicacion();
-        return "$aplicacion/$nombreArchivo";
+        $directorioArchivosSubidos = $this->getRutaArchivosSubidos();
+        return "$directorioArchivosSubidos/$nombreArchivo";
     }
 
     /**
-     * Sube una imagen al servidor
+     * Estrategia #1.
      *
      * @param UploadedFileInterface $archivo
      * @param string $titulo
@@ -116,8 +121,8 @@ class ImagenesService {
 
         if ($imagenSeSubio) {
             $url = $subirImagen["meta"]["url"];
-            if ($this->validation->isValidString($url)) {
-                if ($this->validation->isValidString($titulo)) {
+            if ($this->validacionesService->isValidString($url)) {
+                if ($this->validacionesService->isValidString($titulo)) {
 
                     $query = "INSERT INTO imagenes_en_servidor (titulo, url_imagen) VALUES (:titulo, :url_imagen)";
                     $parametros = [
@@ -125,7 +130,7 @@ class ImagenesService {
                         ":url_imagen" => $url,
                     ];
 
-                    $resultadoDelQuery = $this->storage->query($query, $parametros);
+                    $resultadoDelQuery = $this->persistencia->query($query, $parametros);
                     $seCreoLaImagen = array_key_exists("meta", $resultadoDelQuery) && $resultadoDelQuery["meta"]["count"] == 1;
 
 //                    LoggingService::logVariable($resultadoDelQuery);
@@ -154,6 +159,8 @@ class ImagenesService {
     }
 
     /**
+     * Estrategia #2.
+     *
      * @param UploadedFileInterface $archivo
      * @param string $titulo
      *
@@ -169,10 +176,12 @@ class ImagenesService {
             $pwd = getcwd();
             $path = "$pwd/$url";
 
-            if ($this->validation->isValidString($path)) {
-                if ($this->validation->isValidString($titulo)) {
+            if ($this->validacionesService->isValidString($path)) {
+                if ($this->validacionesService->isValidString($titulo)) {
                     $query = "INSERT INTO imagenes_en_bd (titulo, imagen_tipo, imagen) VALUES (:titulo, :imagen_tipo, :imagen)";
+                    // No almacenamos la imagen "cruda", sino una representación del contenido, en base 64
                     $imagenEnBase64 = base64_encode(file_get_contents($path));
+                    // Para poder leerla de vuelta, ocupamos saber que formato tiene la imagen
                     $tipoDeImagen = mime_content_type($path);
 
                     /**
@@ -186,10 +195,10 @@ class ImagenesService {
                         ":imagen" => [$imagenEnBase64, PDO::PARAM_LOB]
                     ];
 
-                    $resultadoDelQuery = $this->storage->query($query, $parametros, true);
+                    $resultadoDelQuery = $this->persistencia->query($query, $parametros, true);
                     $seCreoLaImagen = array_key_exists("meta", $resultadoDelQuery) && $resultadoDelQuery["meta"]["count"] == 1;
 
-                    LoggingService::logVariable($resultadoDelQuery, __FILE__, __LINE__);
+//                    LoggingService::logVariable($resultadoDelQuery, __FILE__, __LINE__);
 
                     if ($seCreoLaImagen) {
                         $resultado["message"] = "Imagen insertada exitosamente";
@@ -223,17 +232,10 @@ class ImagenesService {
     public function leerImagenBd($id) {
         $respuesta = [];
 
-        if ($this->validation->isValidInt($id)) {
-            // El query que vamos a ejecutar en la BD
+        if ($this->validacionesService->isValidInt($id)) {
             $query = "SELECT imagen, imagen_tipo FROM imagenes_en_bd WHERE id = :id";
-
-            // Los parámetros de ese query
             $parametros = [":id" => intval($id)];
-
-            // El resultado de de ejecutar la sentencia se almacena en la variable `resultado`
-            $resultadoDelQuery = $this->storage->query($query, $parametros);
-
-            // Si la setencia tiene por lo menos una fila, quiere decir que encontramos nuestra noticia
+            $resultadoDelQuery = $this->persistencia->query($query, $parametros);
             $seEncontroLaImagen = array_key_exists("meta", $resultadoDelQuery) && $resultadoDelQuery["meta"]["count"] == 1;
 
 //            LoggingService::logVariable($seEncontroLaImagen, __FILE__, __LINE__);
@@ -256,7 +258,7 @@ class ImagenesService {
     }
 
     /**
-     * Sube una imagen a un servicio servicio.
+     * Estrategia #3.
      *
      * @param UploadedFileInterface $archivo
      * @param string $titulo
@@ -270,7 +272,10 @@ class ImagenesService {
         /**
          * Configuración del servicio servicio:
          * Credenciales personales, idóneamente se manejan como las credenciales de la BD, fuera del repositorio.
+         * Gracias al equipo que me recomendó Cloudinary :).
+         * Pueden usar mis credenciales por ahora, pero desactivaré la cuenta terminando el cuatrimestre.
          */
+
         \Cloudinary::config([
             "cloud_name" => "leopic",
             "api_key" => "399732983768298",
@@ -282,9 +287,12 @@ class ImagenesService {
         // Si la imagen se subió a nuestro servidor
         if ($imagenSeSubio) {
             $url = $subirImagen["meta"]["titulo"];
+            /**
+             * Obtiene el directorio actual donde está corriendo el script de php, osea algo como:
+             * c:\wamp\htdocs\back-end
+             */
             $pwd = getcwd();
             $path = "$pwd/$url";
-            LoggingService::logVariable($subirImagen, __FILE__, __LINE__);
             $respuestaDelServicio = \Cloudinary\Uploader::upload($path);
 
             // Verificamos si la imagen fue efectivamente cargada al servicio
@@ -294,16 +302,20 @@ class ImagenesService {
 
                 $query = "INSERT INTO imagenes_en_servicio_externo (titulo, id_externo, url_imagen) VALUES (:titulo, :id_externo, :url_imagen)";
                 $parametros = [
-                    ":titulo" => $titulo,
+                    /**
+                     * Siempre se recomienda guardar el ID de la entidad con la que trabajamos, cuando existe un
+                     * servicio externo involucrado.
+                     */
                     ":id_externo" => $idExterno,
+                    ":titulo" => $titulo,
                     ":url_imagen" => $url
                 ];
 
                 // En este punto lo que procede es hacer la inserción en la BD de la ruta que retornó el servicio
-                $resultadoDelQuery = $this->storage->query($query, $parametros);
+                $resultadoDelQuery = $this->persistencia->query($query, $parametros);
                 $seCreoLaImagen = array_key_exists("meta", $resultadoDelQuery) && $resultadoDelQuery["meta"]["count"] == 1;
 
-                LoggingService::logVariable($resultadoDelQuery, __FILE__, __LINE__);
+//                LoggingService::logVariable($resultadoDelQuery, __FILE__, __LINE__);
 
                 if ($seCreoLaImagen) {
                     $resultado["message"] = "Imagen insertada exitosamente";
