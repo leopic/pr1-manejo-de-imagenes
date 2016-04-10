@@ -1,0 +1,67 @@
+<div class="page-header">
+    <h1>Manejo de imágenes</h1>
+    <h3>Distintos tipos de almacenamiento</h3>
+</div>
+
+<div class="row">
+    <pre> {{rutas}} </pre>
+    <form novalidate class="col-md-4" name="formImagenServidor" enctype="multipart/form-data"
+          ng-submit="subirImagenServidor()">
+        <fieldset>
+            <legend>En el servidor</legend>
+            <div class="form-group">
+                <label for="tituloImagenServidor">Titulo para la imagen</label>
+                <input type="text" ng-model="tituloImagenServidor" id="tituloImagenServidor" class="form-control" />
+            </div>
+            <div class="form-group">
+                <a class="btn btn-sm btn-default" ngf-select ng-model="imagenServidor"
+                   name="imagenServidor">Seleccione el archivo</a>
+            </div>
+        </fieldset>
+        <div class="form-group">
+            <button type="submit" class="btn btn-success">Subir al servidor</button>
+        </div>
+        <!-- Desplegamos la imagen cargada -->
+        <img ng-src="{{rutas.servidor}}" alt="Imagen de la respuesta" ng-if="rutas.servidor"/>
+    </form>
+
+    <form novalidate class="col-md-4" name="formImagenBD" enctype="multipart/form-data"
+          ng-submit="subirImagenBD()">
+        <fieldset>
+            <legend>En la base de datos</legend>
+            <div class="form-group">
+                <label for="tituloImagenBD">Titulo para la imagen</label>
+                <input type="text" ng-model="tituloImagenBD" id="tituloImagenBD" class="form-control" />
+            </div>
+            <div class="form-group">
+                <a class="btn btn-sm btn-default" ngf-select ng-model="imagenBD"
+                   name="imagenBD">Seleccione el archivo</a>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Subir a la BD</button>
+            </div>
+            <!-- Desplegamos la imagen cargada -->
+            <img ng-src="back-end/imagenes/bd/{{rutas.bd}}" alt="Imagen de la BD" ng-if="rutas.bd"/>
+        </fieldset>
+    </form>
+
+    <form novalidate class="col-md-4" name="formServicio" enctype="multipart/form-data"
+          ng-submit="subirImagenServicio()">
+        <fieldset>
+            <legend>En un servicio servicio</legend>
+            <div class="form-group">
+                <label for="tituloImagenServicio">Titulo para la imagen</label>
+                <input type="text" ng-model="tituloImagenServicio" id="tituloImagenServicio" class="form-control" />
+            </div>
+            <div class="form-group">
+                <a class="btn btn-sm btn-default" ngf-select ng-model="imagenServicio"
+                   name="imagenServicio">Seleccione el archivo</a>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-success">Subir a servicio servicio</button>
+            </div>
+            <!-- Desplegamos la imagen cargada -->
+            <img ng-src="{{rutas.servicio}}" alt="Imagen de servicio servicio" ng-if="rutas.servicio"/>
+        </fieldset>
+    </form>
+</div>

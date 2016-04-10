@@ -1,0 +1,21 @@
+<div ng-if="noticia">
+    <div class="page-header">
+        <h3>{{noticia.titulo}}</h3>
+        <p><a ng-href="#/indice">&lt; Regresar</a></p>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <p>{{noticia.contenido}}</p>
+        </div>
+        <div class="panel-footer">
+            <p>Derechos reservados.</p>
+        </div>
+    </div>
+</div>
+
+<div ng-if="error">
+    <div class="page-header">
+        <h3>Error</h3>
+    </div>
+    <p class="alert alert-danger">{{error}} <a class="alert-link" ng-href="#/indice">Regrese al índice</a></p>
+</div>

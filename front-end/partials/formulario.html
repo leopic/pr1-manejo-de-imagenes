@@ -1,0 +1,24 @@
+<div class="page-header">
+    <h3>Formulario</h3>
+    <p><a ng-href="#/indice">&lt; Regresar</a></p>
+</div>
+
+<form name="noticiaForm" novalidate ng-submit="procesar(noticiaForm.$valid)">
+    <div class="form-group">
+        <label>Título</label>
+        <input type="text" ng-model="noticia.titulo" class="form-control" name="titulo" required />
+    </div>
+    <div class="form-group">
+        <label>Contenido</label>
+        <textarea ng-model="noticia.contenido" class="form-control" required></textarea>
+    </div>
+    <div class="form-group">
+        <label>URL Imagen</label>
+        <input type="text" ng-model="noticia.url_imagen" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <button type="submit" ng-if="crear" class="btn btn-info" ng-disabled="noticiaForm.$invalid">Crear</button>
+        <button type="submit" ng-if="editar" class="btn btn-primary" ng-disabled="noticiaForm.$invalid">Editar</button>
+        <a ng-if="editar" class="btn btn-danger" ng-click="eliminarNoticia()">Eliminar</a>
+    </div>
+</form>

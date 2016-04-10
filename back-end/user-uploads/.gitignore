@@ -1,0 +1,5 @@
+# No mantendremos en control de versiones los archivos subidos, ya que cambian por ambiente
+*.png
+*.jpg
+*.jpeg
+*.gif

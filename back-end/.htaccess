@@ -1,0 +1,10 @@
+# Configuración de apache ocupada por composer
+
+# Enciende la sobre-escritura de rutas
+RewriteEngine On
+# Si la petición no es un archivo
+RewriteCond %{REQUEST_FILENAME} !-f
+# Y tampoco un directorio
+RewriteCond %{REQUEST_FILENAME} !-d
+# Redirijala hacia "index.php", asignando todos los parámetros de la ruta original
+RewriteRule ^ index.php [QSA,L]

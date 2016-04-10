@@ -1,0 +1,22 @@
+{
+    "name": "leopic/manejo-de-imagenes",
+    "description": "Ejemplo de como manejar imagenes AngularJS y PHP/MySQL",
+    "config": {
+      "vendor-dir": "back-end/vendor"
+    }, 
+    "require": {
+        "slim/slim": "^3.3",
+        "cloudinary/cloudinary_php": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {"App\\": "back-end/app/src/"}
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Leo Picado",
+            "email": "leopic@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
